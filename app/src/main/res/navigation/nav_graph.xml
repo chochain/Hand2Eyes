@@ -44,8 +44,8 @@
             app:popUpToInclusive="true" />
     </fragment>
 
-    <fragment
+    <!--fragment
         android:id="@+id/gallery_fragment"
         android:name="com.google.mediapipe.examples.handlandmarker.fragment.GalleryFragment"
-        android:label="GalleryFragment" />
+        android:label="GalleryFragment" /-->
 </navigation>
