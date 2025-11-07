@@ -14,7 +14,8 @@
     ~ See the License for the specific language governing permissions and
     ~ limitations under the License.
 -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -30,7 +31,7 @@
             android:id="@+id/fragment_container"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
-            android:layout_height="440dp"
+            android:layout_height="400dp"
             android:layout_marginTop="?android:attr/actionBarSize"
             android:background="@android:color/transparent"
             android:keepScreenOn="true"
@@ -38,7 +39,7 @@
             app:navGraph="@navigation/nav_graph"
             tools:context=".MainActivity" />
 
-        <androidx.appcompat.widget.Toolbar
+        <!--androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -56,6 +57,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/toolbar"
+            app:itemIconTint="@color/bg_nav_item"
+            app:itemTextColor="@color/bg_nav_item"
+            app:menu="@menu/menu_bottom_nav" /-->
+        
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:itemIconTint="@color/bg_nav_item"
             app:itemTextColor="@color/bg_nav_item"
             app:menu="@menu/menu_bottom_nav" />
