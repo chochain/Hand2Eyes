@@ -197,7 +197,7 @@ class HandLandmarkerHelper(
         // As we're using running mode LIVE_STREAM, the landmark result will
         // be returned in returnLivestreamResult function
     }
-
+/*
     // Accepts the URI for a video file loaded from the user's gallery and attempts to run
     // hand landmarker inference on the video. This process will evaluate every
     // frame in the video and attach the results to a bundle that will be
@@ -326,7 +326,7 @@ class HandLandmarkerHelper(
         )
         return null
     }
-
+*/
     // Return the landmark result to this HandLandmarkerHelper's caller
     private fun returnLivestreamResult(
         result: HandLandmarkerResult,
