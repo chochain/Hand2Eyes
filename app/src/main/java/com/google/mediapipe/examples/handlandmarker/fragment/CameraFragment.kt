@@ -377,8 +377,9 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         activity?.runOnUiThread {
             if (_fragmentCameraBinding != null) {
                 fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
-                    String.format("%d ms", resultBundle.inferenceTime)
-
+                    String.format("%dx%d %dms",
+                        resultBundle.inputImageHeight, resultBundle.inputImageWidth,
+                        resultBundle.inferenceTime)
                 // Pass necessary information to OverlayView for drawing on the canvas
                 fragmentCameraBinding.overlay.setResults(
                     resultBundle.results.first(),
