@@ -39,7 +39,7 @@ import java.util.Locale
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-
+/*
 class GalleryFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
 
     enum class MediaType {
@@ -456,3 +456,4 @@ class GalleryFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         private const val VIDEO_INTERVAL_MS = 300L
     }
 }
+*/
