@@ -117,6 +117,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     }
 
     companion object {
-        private const val LANDMARK_STROKE_WIDTH = 8F
+        private const val LANDMARK_STROKE_WIDTH = 3F
     }
 }
