@@ -172,10 +172,10 @@ class HandLandmarkerHelper(
             // flip image if user use front camera
             if (isFrontCamera) {
                 postScale(
-                    -1f,
-                    1f,
-                    imageProxy.width.toFloat(),
-                    imageProxy.height.toFloat()
+                    -0.25f,
+                    0.25f,
+                    (imageProxy.width).toFloat(),
+                    (imageProxy.height).toFloat()
                 )
             }
         }
