@@ -18,39 +18,21 @@
     android:id="@+id/bottom_sheet_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
     android:background="@color/bottom_sheet_background"
-    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="@dimen/bottom_sheet_padding"
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
+  
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Chevron indicating that the bottom sheet is expandable -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:contentDescription="@string/alt_bottom_sheet_chevron"
-                android:src="@drawable/icn_chevron_up" />
-        </RelativeLayout>
-
-        <!-- Inference time row -->
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/bottom_sheet_default_row_margin"
             android:orientation="horizontal">
 
             <TextView
@@ -64,17 +46,33 @@
 
             <TextView
                 android:id="@+id/inference_time_val"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:gravity="end"
-                android:text="0ms"
+                android:text=" [wxh] 0ms"
                 android:textColor="@color/bottom_sheet_text_color"
                 android:textSize="@dimen/bottom_sheet_text_size" />
         </androidx.appcompat.widget.LinearLayoutCompat>
+        
+        <!-- Chevron indicating that the bottom sheet is expandable -->
+        <!--RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/alt_bottom_sheet_chevron"
+                android:src="@drawable/icn_chevron_up" />
+        </RelativeLayout-->
+
+        <!-- Inference time row -->
 
         <!-- ML confidence threshold adjustment row -->
-        <RelativeLayout
+        <!--RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bottom_sheet_default_row_margin"
@@ -121,9 +119,9 @@
                     android:contentDescription="@string/alt_bottom_sheet_threshold_button_plus"
                     android:src="@drawable/ic_plus" />
             </LinearLayout>
-        </RelativeLayout>
+        </RelativeLayout-->
 
-        <RelativeLayout
+        <!--RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bottom_sheet_default_row_margin"
@@ -170,9 +168,9 @@
                     android:contentDescription="@string/alt_bottom_sheet_threshold_button_plus"
                     android:src="@drawable/ic_plus" />
             </LinearLayout>
-        </RelativeLayout>
+        </RelativeLayout-->
 
-        <RelativeLayout
+        <!--RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bottom_sheet_default_row_margin"
@@ -219,10 +217,10 @@
                     android:contentDescription="@string/alt_bottom_sheet_threshold_button_plus"
                     android:src="@drawable/ic_plus" />
             </LinearLayout>
-        </RelativeLayout>
+        </RelativeLayout-->
 
         <!-- ML max num hands adjustment row -->
-        <RelativeLayout
+        <!--RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bottom_sheet_default_row_margin"
@@ -269,10 +267,10 @@
                     android:contentDescription="@string/alt_bottom_sheet_max_results_button_plus"
                     android:src="@drawable/ic_plus" />
             </LinearLayout>
-        </RelativeLayout>
+        </RelativeLayout-->
 
         <!-- Delegate selection row -->
-        <RelativeLayout
+        <!--RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bottom_sheet_default_row_margin">
@@ -294,6 +292,6 @@
                 android:spinnerMode="dropdown"
                 android:theme="@style/BottomSheetSpinnerItemStyle" />
 
-        </RelativeLayout>
+        </RelativeLayout-->
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.core.widget.NestedScrollView>
