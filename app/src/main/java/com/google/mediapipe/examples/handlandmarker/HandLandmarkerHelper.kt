@@ -17,6 +17,7 @@ package com.google.mediapipe.examples.handlandmarker
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Matrix
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -24,6 +25,7 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.camera.core.ImageProxy
+import com.google.android.gms.vision.face.Landmark
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
@@ -62,6 +64,26 @@ class HandLandmarkerHelper(
         return handLandmarker == null
     }
 
+    fun calcCtrlColors(
+        result : HandLandmarkerResult
+    ) : Array<Int> {
+        var x : Float = 0f
+        var y : Float = 0f
+        var i : Int = 0
+
+        for (landmark in result.landmarks()) {
+            for (pt in landmark) {
+                if (i == 8) { x += pt.x(); y += pt.y(); }
+                if (i == 5) { x -= pt.x(); y -= pt.y(); }
+                i++
+            }
+
+        }
+        var r : Int = ((1f + x) * 128f).toInt()
+        var u : Int = ((1f + y) * 128f).toInt()
+
+        return arrayOf(Color.rgb(r,r,r), Color.rgb(u,u,u))
+    }
     // Initialize the Hand landmarker using current settings on the
     // thread that is using it. CPU can be used with Landmarker
     // that are created on the main thread and used on a background thread, but
@@ -171,7 +193,7 @@ class HandLandmarkerHelper(
 
             // flip image if user use front camera
             if (isFrontCamera) {
-                postScale(
+                postScale(                /// 640x480 => 160x120
                     -0.25f,
                     0.25f,
                     (imageProxy.width).toFloat(),
