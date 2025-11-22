@@ -17,6 +17,7 @@ package com.google.mediapipe.examples.handlandmarker.fragment
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,14 +33,17 @@ import androidx.camera.core.Camera
 import androidx.camera.core.AspectRatio
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import com.google.mediapipe.examples.handlandmarker.HandLandmarkerHelper
+import com.google.mediapipe.examples.handlandmarker.MainActivity
 import com.google.mediapipe.examples.handlandmarker.MainViewModel
 import com.google.mediapipe.examples.handlandmarker.R
 import com.google.mediapipe.examples.handlandmarker.databinding.FragmentCameraBinding
 import com.google.mediapipe.tasks.vision.core.RunningMode
+import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -376,23 +380,26 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         resultBundle: HandLandmarkerHelper.ResultBundle
     ) {
         activity?.runOnUiThread {
-            if (_fragmentCameraBinding != null) {
-                fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
-                    String.format(" [%dx%d] %dms",
-                        resultBundle.inputImageHeight, resultBundle.inputImageWidth,
-                        resultBundle.inferenceTime)
-                // Pass necessary information to OverlayView for drawing on the canvas
+            if (_fragmentCameraBinding == null) return@runOnUiThread
 
-                fragmentCameraBinding.overlay.setResults(
-                    resultBundle.results.first(),
-                    resultBundle.inputImageHeight,
-                    resultBundle.inputImageWidth,
-                    RunningMode.LIVE_STREAM
-                )
+            fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
+                String.format(" [%dx%d] %dms",
+                resultBundle.inputImageHeight, resultBundle.inputImageWidth,
+                resultBundle.inferenceTime)
 
-                // Force a redraw
-                fragmentCameraBinding.overlay.invalidate()
-            }
+            // Pass necessary information to OverlayView for drawing on the canvas
+            fragmentCameraBinding.overlay.setResults(
+                resultBundle.results.first(),
+                resultBundle.inputImageHeight,
+                resultBundle.inputImageWidth,
+                RunningMode.LIVE_STREAM
+            )
+
+            // Force a redraw
+            fragmentCameraBinding.overlay.invalidate()
+
+            var colors = handLandmarkerHelper.calcCtrlColors(resultBundle.results.first())
+            (activity as MainActivity).updateBackground(colors[0], colors[1])
         }
     }
 
