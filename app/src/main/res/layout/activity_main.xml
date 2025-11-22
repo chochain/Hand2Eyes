@@ -80,14 +80,14 @@
                 android:layout_height="match_parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintWidth_percent="0.5"
-                android:background="@android:color/darker_gray"/>
+                android:background="@android:color/holo_green_dark"/>
             <View
                 android:id="@+id/view_right"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintWidth_percent="0.5"
-                android:background="@android:color/darker_gray"/>
+                android:background="@android:color/holo_red_dark"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--View
