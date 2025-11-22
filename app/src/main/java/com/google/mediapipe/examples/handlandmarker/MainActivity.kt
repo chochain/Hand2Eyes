@@ -15,6 +15,8 @@
  */
 package com.google.mediapipe.examples.handlandmarker
 
+import android.R.attr.left
+import android.R.attr.right
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +26,7 @@ import com.google.mediapipe.examples.handlandmarker.databinding.ActivityMainBind
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
-    private val viewModel : MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +43,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-       finish()
+        finish()
+    }
+
+    fun updateBackground(lcolor: Int, rcolor: Int) {
+        activityMainBinding.viewLeft.setBackgroundColor(lcolor)
+        activityMainBinding.viewRight.setBackgroundColor(rcolor)
     }
 }
