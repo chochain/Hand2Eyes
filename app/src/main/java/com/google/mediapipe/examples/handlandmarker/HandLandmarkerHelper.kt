@@ -25,7 +25,7 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.camera.core.ImageProxy
-import com.google.android.gms.vision.face.Landmark
+//import com.google.android.gms.vision.face.Landmark
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
@@ -79,8 +79,12 @@ class HandLandmarkerHelper(
             }
 
         }
-        var r : Int = ((1f + x) * 128f).toInt()
-        var u : Int = ((1f + y) * 128f).toInt()
+        var r : Int = ((1f + x*4f) * 128f).toInt()
+        var u : Int = ((1f + y*4f) * 128f).toInt()
+        if (r < 0) r=0
+        if (r > 255) r=255
+        if (u < 0) u=0
+        if (u > 255) u=255
 
         return arrayOf(Color.rgb(r,r,r), Color.rgb(u,u,u))
     }
