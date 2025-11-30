@@ -79,8 +79,8 @@ class HandLandmarkerHelper(
             }
 
         }
-        var r : Int = ((1f + x*4f) * 128f).toInt()
-        var u : Int = ((1f + y*4f) * 128f).toInt()
+        var r : Int = ((1f + x*2f) * 128f).toInt()
+        var u : Int = ((1f + y*2f) * 128f).toInt()
         if (r < 0) r=0
         if (r > 255) r=255
         if (u < 0) u=0
