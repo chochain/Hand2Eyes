@@ -63,6 +63,13 @@ class HandLandmarkerHelper(
         return handLandmarker == null
     }
 
+    fun normalizeColor(v: Float): Int {
+        var c : Int = ((1f + v*2f) * 128f).toInt()
+        if (c < 0) return Color.BLACK
+        if (c > 255) return Color.WHITE
+        return Color.rgb(c, c, c)
+    }
+
     fun calcCtrlColors(
         result : HandLandmarkerResult
     ) : Array<Int> {
@@ -77,14 +84,10 @@ class HandLandmarkerHelper(
                 i++
             }
         }
-        var r : Int = ((1f + x*2f) * 128f).toInt()
-        var u : Int = ((1f + y*2f) * 128f).toInt()
-        if (r < 0) r=0
-        if (r > 255) r=255
-        if (u < 0) u=0
-        if (u > 255) u=255
+        var r : Int = normalizeColor(x)
+        var u : Int = normalizeColor(y)
 
-        return arrayOf(Color.rgb(r,r,r), Color.rgb(u,u,u))
+        return arrayOf(r, u)
     }
     // Initialize the Hand landmarker using current settings on the
     // thread that is using it. CPU can be used with Landmarker
@@ -196,8 +199,8 @@ class HandLandmarkerHelper(
             // flip image if user use front camera
             if (isFrontCamera) {
                 postScale(
-                    -0.5f,          /// 640x480 => 320x240
-                    0.5f,
+                    -0.25f,          /// 640x480 => 160x120
+                    0.25f,
                     imageProxy.width.toFloat(),
                     imageProxy.height.toFloat()
                 )
@@ -386,7 +389,7 @@ class HandLandmarkerHelper(
         const val DEFAULT_HAND_DETECTION_CONFIDENCE = 0.45F
         const val DEFAULT_HAND_TRACKING_CONFIDENCE = 0.45F
         const val DEFAULT_HAND_PRESENCE_CONFIDENCE = 0.45F
-        const val DEFAULT_NUM_HANDS = 2
+        const val DEFAULT_NUM_HANDS = 1
         const val OTHER_ERROR = 0
         const val GPU_ERROR = 1
     }
