@@ -15,6 +15,8 @@
  */
 package com.google.mediapipe.examples.handlandmarker
 
+import android.R.attr.left
+import android.R.attr.right
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -42,5 +44,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
        finish()
+    }
+    
+    fun updateBackground(lcolor: Int, rcolor: Int) {
+        activityMainBinding.viewLeft.setBackgroundColor(lcolor)
+        activityMainBinding.viewRight.setBackgroundColor(rcolor)
     }
 }
