@@ -69,14 +69,35 @@
             app:itemTextColor="@color/bg_nav_item"
             app:menu="@menu/menu_bottom_nav" />
 
-        <ImageView
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_below="@id/fragment_container" >
+
+            <View
+                android:id="@+id/view_left"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="0.5"
+                android:background="@android:color/holo_green_dark"/>
+            <View
+                android:id="@+id/view_right"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_percent="0.5"
+                android:background="@android:color/holo_red_dark"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--ImageView
             android:id="@+id/view"
             android:contentDescription="keForth"
             android:layout_width="match_parent"
             android:layout_below="@id/fragment_container"
             android:layout_height="300dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/keforth_logo_01" />
+            android:src="@drawable/keforth_logo_01" /-->
         
         <!--View
             android:id="@+id/view"
