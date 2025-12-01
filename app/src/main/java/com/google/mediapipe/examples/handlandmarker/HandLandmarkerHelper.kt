@@ -18,9 +18,9 @@ package com.google.mediapipe.examples.handlandmarker
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.graphics.Color
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.graphics.Color
 import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.VisibleForTesting
@@ -130,6 +130,11 @@ class HandLandmarkerHelper(
             val score = 0.01f * res.getInteger(R.integer.landmark_detect_confidence)
             val hands = res.getInteger(R.integer.landmark_num_hands)
 
+            minHandDetectionConfidence = score
+            minHandTrackingConfidence  = score
+            minHandPresenceConfidence  = score
+            maxNumHands                = hands
+
             // Create an option builder with base options and specific
             // options only use for Hand Landmarker.
             val optionsBuilder =
@@ -139,10 +144,6 @@ class HandLandmarkerHelper(
                     .setMinTrackingConfidence(score)
                     .setMinHandPresenceConfidence(score)
                     .setNumHands(hands)
-                    //.setMinHandDetectionConfidence(minHandDetectionConfidence)
-                    //.setMinTrackingConfidence(minHandTrackingConfidence)
-                    //.setMinHandPresenceConfidence(minHandPresenceConfidence)
-                    //.setNumHands(maxNumHands)
                     .setRunningMode(runningMode)
 
             // The ResultListener and ErrorListener only use for LIVE_STREAM mode.
