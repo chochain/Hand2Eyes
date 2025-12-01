@@ -15,7 +15,6 @@
     ~ limitations under the License.
 -->
 <resources>
-    <dimen name="stroke_small">1dp</dimen>
     <dimen name="round_button_medium">64dp</dimen>
 
     <!-- Bottom Sheet -->
@@ -31,9 +30,9 @@
     <integer name="bottom_sheet_control_text_min_ems">3</integer>
     <dimen name="fab_margin">16dp</dimen>
     
-    <integer name="landmark_delegate_gpu">1</integer>
+    <integer name="landmark_delegate_gpu">0</integer>
     <integer name="landmark_num_hands">1</integer>
-    <integer name="landmark_stroke_width">8</integer>
+    <integer name="landmark_stroke_width">3</integer>
     <integer name="landmark_post_scale">25</integer>
     <integer name="landmark_detect_confidence">40</integer>
 </resources>
