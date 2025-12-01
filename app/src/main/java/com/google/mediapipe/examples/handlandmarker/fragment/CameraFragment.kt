@@ -154,9 +154,9 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         }
 
         // Attach listeners to UI control widgets
-        initBottomSheetControls()
+        // initBottomSheetControls()
     }
-
+/*
     private fun initBottomSheetControls() {
         // init bottom sheet settings
         fragmentCameraBinding.bottomSheetLayout.maxHandsValue.text =
@@ -253,7 +253,7 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
                     try {
                         handLandmarkerHelper.currentDelegate = p2
                         updateControlsUi()
-                    } catch(e: UninitializedPropertyAccessException) {
+                    } catch (e: UninitializedPropertyAccessException) {
                         Log.e(TAG, "HandLandmarkerHelper has not been initialized yet.")
                     }
                 }
@@ -296,7 +296,7 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         }
         fragmentCameraBinding.overlay.clear()
     }
-
+*/
     // Initialize CameraX, and prepare to bind the camera use cases
     private fun setUpCamera() {
         val cameraProviderFuture =
@@ -394,22 +394,24 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
                 RunningMode.LIVE_STREAM
             )
 
-            var colors = handLandmarkerHelper.calcCtrlColors(resultBundle.results.first())
-            (activity as MainActivity).updateBackground(colors[0], colors[1])
-            
             // Force a redraw
             fragmentCameraBinding.overlay.invalidate()
+
+            var colors = handLandmarkerHelper.calcCtrlColors(resultBundle.results.first())
+            (activity as MainActivity).updateBackground(colors[0], colors[1])
         }
     }
 
     override fun onError(error: String, errorCode: Int) {
         activity?.runOnUiThread {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+            /*
             if (errorCode == HandLandmarkerHelper.GPU_ERROR) {
                 fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
                     HandLandmarkerHelper.DELEGATE_CPU, false
                 )
             }
+            */
         }
     }
 }
