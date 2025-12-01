@@ -88,6 +88,7 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
     override fun onPause() {
         super.onPause()
         if(this::handLandmarkerHelper.isInitialized) {
+            viewModel.setDelegate(handLandmarkerHelper.currentDelegate)
             viewModel.setMaxHands(handLandmarkerHelper.maxNumHands)
             viewModel.setMinHandDetectionConfidence(handLandmarkerHelper.minHandDetectionConfidence)
             viewModel.setMinHandTrackingConfidence(handLandmarkerHelper.minHandTrackingConfidence)
@@ -133,6 +134,15 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
             // Set up the camera and its use cases
             setUpCamera()
         }
+
+        val res = context?.resources
+        val gpu = res!!.getInteger(R.integer.landmark_delegate_gpu) == HandLandmarkerHelper.DELEGATE_GPU
+        fragmentCameraBinding.bottomSheetLayout.inferenceTimeLabel.text =
+            String.format("%s %dH A=%4.2f ",
+                if (gpu) "GPU" else "CPU",
+                viewModel.currentMaxHands,
+                viewModel.currentMinHandDetectionConfidence)
+
 
         // Create the HandLandmarkerHelper that will handle the inference
         backgroundExecutor.execute {
@@ -377,9 +387,9 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
             if (_fragmentCameraBinding == null) return@runOnUiThread
 
             fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
-                String.format(" [%dx%d] %dms",
-                resultBundle.inputImageHeight, resultBundle.inputImageWidth,
-                resultBundle.inferenceTime)
+                String.format("[%dx%d] %4dms",
+                    resultBundle.inputImageHeight, resultBundle.inputImageWidth,
+                    resultBundle.inferenceTime)
 
             // Pass necessary information to OverlayView for drawing on the canvas
             fragmentCameraBinding.overlay.setResults(
