@@ -39,7 +39,7 @@ class HandLandmarkerHelper(
     var minHandPresenceConfidence: Float = DEFAULT_HAND_PRESENCE_CONFIDENCE,
     var maxNumHands: Int = DEFAULT_NUM_HANDS,
     var currentDelegate: Int = DELEGATE_CPU,
-    var runningMode: RunningMode = RunningMode.IMAGE,
+    var runningMode: RunningMode = RunningMode.LIVE_STREAM,
     val context: Context,
     // this listener is only used when running in RunningMode.LIVE_STREAM
     val handLandmarkerHelperListener: LandmarkerListener? = null
@@ -67,7 +67,7 @@ class HandLandmarkerHelper(
         var c : Int = ((1f + v*2f) * 128f).toInt()
         if (c < 0) return Color.BLACK
         if (c > 255) return Color.WHITE
-        return Color.rgb(c, c, c)
+        return Color.rgb(c, c, c) /// monochrome
     }
 
     fun calcCtrlColors(
@@ -97,17 +97,18 @@ class HandLandmarkerHelper(
     fun setupHandLandmarker() {
         // Set general hand landmarker options
         val baseOptionBuilder = BaseOptions.builder()
-
-        // Use the specified hardware for running the model. Default to CPU
-        when (currentDelegate) {
-            DELEGATE_CPU -> {
+        val res = context.resources
+        val gpu = res.getInteger(R.integer.landmark_delegate_gpu)
+        when (gpu) {
+            0 -> {
+                currentDelegate = DELEGATE_CPU
                 baseOptionBuilder.setDelegate(Delegate.CPU)
             }
-            DELEGATE_GPU -> {
+            1 -> {
+                currentDelegate = DELEGATE_GPU
                 baseOptionBuilder.setDelegate(Delegate.GPU)
             }
         }
-
         baseOptionBuilder.setModelAssetPath(MP_HAND_LANDMARKER_TASK)
 
         // Check if runningMode is consistent with handLandmarkerHelperListener
@@ -126,15 +127,22 @@ class HandLandmarkerHelper(
 
         try {
             val baseOptions = baseOptionBuilder.build()
+            val score = 0.01f * res.getInteger(R.integer.landmark_detect_confidence)
+            val hands = res.getInteger(R.integer.landmark_num_hands)
+
             // Create an option builder with base options and specific
             // options only use for Hand Landmarker.
             val optionsBuilder =
                 HandLandmarker.HandLandmarkerOptions.builder()
                     .setBaseOptions(baseOptions)
-                    .setMinHandDetectionConfidence(minHandDetectionConfidence)
-                    .setMinTrackingConfidence(minHandTrackingConfidence)
-                    .setMinHandPresenceConfidence(minHandPresenceConfidence)
-                    .setNumHands(maxNumHands)
+                    .setMinHandDetectionConfidence(score)
+                    .setMinTrackingConfidence(score)
+                    .setMinHandPresenceConfidence(score)
+                    .setNumHands(hands)
+                    //.setMinHandDetectionConfidence(minHandDetectionConfidence)
+                    //.setMinTrackingConfidence(minHandTrackingConfidence)
+                    //.setMinHandPresenceConfidence(minHandPresenceConfidence)
+                    //.setNumHands(maxNumHands)
                     .setRunningMode(runningMode)
 
             // The ResultListener and ErrorListener only use for LIVE_STREAM mode.
@@ -195,12 +203,13 @@ class HandLandmarkerHelper(
         val matrix = Matrix().apply {
             // Rotate the frame received from the camera to be in the same direction as it'll be shown
             postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
+            val scale = 0.01f * context.resources.getInteger(R.integer.landmark_post_scale)
 
             // flip image if user use front camera
             if (isFrontCamera) {
                 postScale(
-                    -0.25f,          /// 640x480 => 160x120
-                    0.25f,
+                    -scale,          /// 640x480 => 160x120
+                    scale,
                     imageProxy.width.toFloat(),
                     imageProxy.height.toFloat()
                 )
