@@ -82,8 +82,8 @@ class HandLandmarkerHelper(
                 i++
             }
         }
-        var r : Int = normalizeColor(x)
-        var u : Int = normalizeColor(y)
+        val r : Int = normalizeColor(x)
+        val u : Int = normalizeColor(y)
 
         return arrayOf(r, u)
     }
@@ -146,8 +146,7 @@ class HandLandmarkerHelper(
 
             // The ResultListener and ErrorListener only use for LIVE_STREAM mode.
             if (runningMode == RunningMode.LIVE_STREAM) {
-                optionsBuilder
-                    .setResultListener(this::returnLivestreamResult)
+                optionsBuilder.setResultListener(this::returnLivestreamResult)
                     .setErrorListener(this::returnLivestreamError)
             }
 
@@ -394,9 +393,9 @@ class HandLandmarkerHelper(
 
         const val DELEGATE_CPU = 0
         const val DELEGATE_GPU = 1
-        const val DEFAULT_HAND_DETECTION_CONFIDENCE = 0.45F
-        const val DEFAULT_HAND_TRACKING_CONFIDENCE = 0.45F
-        const val DEFAULT_HAND_PRESENCE_CONFIDENCE = 0.45F
+        const val DEFAULT_HAND_DETECTION_CONFIDENCE = 0.40F
+        const val DEFAULT_HAND_TRACKING_CONFIDENCE = 0.40F
+        const val DEFAULT_HAND_PRESENCE_CONFIDENCE = 0.40F
         const val DEFAULT_NUM_HANDS = 1
         const val OTHER_ERROR = 0
         const val GPU_ERROR = 1
