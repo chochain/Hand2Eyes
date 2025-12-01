@@ -15,8 +15,6 @@
  */
 package com.google.mediapipe.examples.handlandmarker
 
-import android.R.attr.left
-import android.R.attr.right
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
