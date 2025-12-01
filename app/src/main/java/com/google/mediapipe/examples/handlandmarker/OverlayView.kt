@@ -52,13 +52,16 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     }
 
     private fun initPaints() {
+        val res = context.resources
+        val sw  = scaleFactor * res.getInteger(R.integer.landmark_stroke_width)
+
         linePaint.color =
             ContextCompat.getColor(context!!, R.color.mp_color_secondary)
-        linePaint.strokeWidth = LANDMARK_STROKE_WIDTH
+        linePaint.strokeWidth = sw
         linePaint.style = Paint.Style.STROKE
 
         pointPaint.color = Color.YELLOW
-        pointPaint.strokeWidth = LANDMARK_STROKE_WIDTH
+        pointPaint.strokeWidth = sw
         pointPaint.style = Paint.Style.FILL
     }
 
@@ -114,9 +117,5 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
             }
         }
         invalidate()
-    }
-
-    companion object {
-        private const val LANDMARK_STROKE_WIDTH = 3F
     }
 }
