@@ -32,11 +32,11 @@ import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
 
 class HandLandmarkerHelper(
-    var minHandDetectionConfidence: Float = DEFAULT_HAND_DETECTION_CONFIDENCE,
-    var minHandTrackingConfidence: Float = DEFAULT_HAND_TRACKING_CONFIDENCE,
-    var minHandPresenceConfidence: Float = DEFAULT_HAND_PRESENCE_CONFIDENCE,
-    var maxNumHands: Int = DEFAULT_NUM_HANDS,
-    var currentDelegate: Int = DELEGATE_CPU,
+    var detect: Float,
+    var track: Float,
+    var presence: Float,
+    var hands: Int,
+    var gpu: Int,
     val context: Context,
     // this listener is only used when running in RunningMode.LIVE_STREAM
     val handLandmarkerHelperListener: LandmarkerListener? = null
@@ -93,20 +93,13 @@ class HandLandmarkerHelper(
     // Landmarker
     fun setupHandLandmarker() {
         // Set general hand landmarker options
-        val baseOptionBuilder = BaseOptions.builder()
         val res = context.resources
-        val gpu = res.getInteger(R.integer.landmark_delegate_gpu)
-        when (gpu) {
-            0 -> {
-                currentDelegate = DELEGATE_CPU
-                baseOptionBuilder.setDelegate(Delegate.CPU)
-            }
-            1 -> {
-                currentDelegate = DELEGATE_GPU
-                baseOptionBuilder.setDelegate(Delegate.GPU)
-            }
-        }
-        baseOptionBuilder.setModelAssetPath(MP_HAND_LANDMARKER_TASK)
+        gpu = res.getInteger(R.integer.landmark_delegate_gpu)
+
+        val baseOptionBuilder = BaseOptions.builder()
+        baseOptionBuilder
+            .setModelAssetPath(MP_HAND_LANDMARKER_TASK)
+            .setDelegate(if (gpu == 1) Delegate.GPU else Delegate.CPU)
 
         // Check if runningMode is consistent with handLandmarkerHelperListener
         if (handLandmarkerHelperListener == null) {
@@ -118,12 +111,11 @@ class HandLandmarkerHelper(
         try {
             val baseOptions = baseOptionBuilder.build()
             val score = 0.01f * res.getInteger(R.integer.landmark_detect_confidence)
-            val hands = res.getInteger(R.integer.landmark_num_hands)
 
-            minHandDetectionConfidence = score
-            minHandTrackingConfidence  = score
-            minHandPresenceConfidence  = score
-            maxNumHands                = hands
+            detect   = score
+            track    = score
+            presence = score
+            hands    = res.getInteger(R.integer.landmark_num_hands)
 
             // Create an option builder with base options and specific
             // options only use for Hand Landmarker.
@@ -137,7 +129,8 @@ class HandLandmarkerHelper(
                     .setRunningMode(RunningMode.LIVE_STREAM)
 
             // The ResultListener and ErrorListener only use for LIVE_STREAM mode.
-            optionsBuilder.setResultListener(this::returnLivestreamResult)
+            optionsBuilder
+                .setResultListener(this::returnLivestreamResult)
                 .setErrorListener(this::returnLivestreamError)
 
             val options = optionsBuilder.build()
@@ -145,18 +138,17 @@ class HandLandmarkerHelper(
                 HandLandmarker.createFromOptions(context, options)
         } catch (e: IllegalStateException) {
             handLandmarkerHelperListener?.onError(
-                "Hand Landmarker failed to initialize. See error logs for " +
-                        "details"
+                "Hand Landmarker failed to initialize. See error logs for details"
             )
             Log.e(
-                TAG, "MediaPipe failed to load the task with error: " + e
-                    .message
+                TAG,
+                "MediaPipe failed to load the task with error: " + e.message
             )
         } catch (e: RuntimeException) {
             // This occurs if the model being used does not support GPU
             handLandmarkerHelperListener?.onError(
-                "Hand Landmarker failed to initialize. See error logs for " +
-                        "details", GPU_ERROR
+                "Hand Landmarker failed to initialize. See error logs for details",
+                GPU_ERROR
             )
             Log.e(
                 TAG,
@@ -244,13 +236,6 @@ class HandLandmarkerHelper(
     companion object {
         const val TAG = "HandLandmarkerHelper"
         private const val MP_HAND_LANDMARKER_TASK = "hand_landmarker.task"
-
-        const val DELEGATE_CPU = 0
-        const val DELEGATE_GPU = 1
-        const val DEFAULT_HAND_DETECTION_CONFIDENCE = 0.40F
-        const val DEFAULT_HAND_TRACKING_CONFIDENCE = 0.40F
-        const val DEFAULT_HAND_PRESENCE_CONFIDENCE = 0.40F
-        const val DEFAULT_NUM_HANDS = 1
         const val OTHER_ERROR = 0
         const val GPU_ERROR = 1
     }
