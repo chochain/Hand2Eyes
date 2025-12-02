@@ -37,7 +37,6 @@ class HandLandmarkerHelper(
     var minHandPresenceConfidence: Float = DEFAULT_HAND_PRESENCE_CONFIDENCE,
     var maxNumHands: Int = DEFAULT_NUM_HANDS,
     var currentDelegate: Int = DELEGATE_CPU,
-    var runningMode: RunningMode = RunningMode.LIVE_STREAM,
     val context: Context,
     // this listener is only used when running in RunningMode.LIVE_STREAM
     val handLandmarkerHelperListener: LandmarkerListener? = null
@@ -110,17 +109,10 @@ class HandLandmarkerHelper(
         baseOptionBuilder.setModelAssetPath(MP_HAND_LANDMARKER_TASK)
 
         // Check if runningMode is consistent with handLandmarkerHelperListener
-        when (runningMode) {
-            RunningMode.LIVE_STREAM -> {
-                if (handLandmarkerHelperListener == null) {
-                    throw IllegalStateException(
-                        "handLandmarkerHelperListener must be set when runningMode is LIVE_STREAM."
-                    )
-                }
-            }
-            else -> {
-                // no-op
-            }
+        if (handLandmarkerHelperListener == null) {
+            throw IllegalStateException(
+                "handLandmarkerHelperListener must be set when runningMode is LIVE_STREAM."
+            )
         }
 
         try {
@@ -142,13 +134,11 @@ class HandLandmarkerHelper(
                     .setMinTrackingConfidence(score)
                     .setMinHandPresenceConfidence(score)
                     .setNumHands(hands)
-                    .setRunningMode(runningMode)
+                    .setRunningMode(RunningMode.LIVE_STREAM)
 
             // The ResultListener and ErrorListener only use for LIVE_STREAM mode.
-            if (runningMode == RunningMode.LIVE_STREAM) {
-                optionsBuilder.setResultListener(this::returnLivestreamResult)
-                    .setErrorListener(this::returnLivestreamError)
-            }
+            optionsBuilder.setResultListener(this::returnLivestreamResult)
+                .setErrorListener(this::returnLivestreamError)
 
             val options = optionsBuilder.build()
             handLandmarker =
@@ -180,12 +170,6 @@ class HandLandmarkerHelper(
         imageProxy: ImageProxy,
         isFrontCamera: Boolean
     ) {
-        if (runningMode != RunningMode.LIVE_STREAM) {
-            throw IllegalArgumentException(
-                "Attempting to call detectLiveStream" +
-                        " while not using RunningMode.LIVE_STREAM"
-            )
-        }
         val frameTime = SystemClock.uptimeMillis()
 
         // Copy out RGB bits from the frame to a bitmap buffer
