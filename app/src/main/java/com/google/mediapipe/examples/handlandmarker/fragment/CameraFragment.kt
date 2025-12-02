@@ -28,7 +28,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Camera
-import androidx.camera.core.AspectRatio
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -44,29 +43,27 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
-
     companion object {
-        private const val TAG = "Hand Landmarker"
+        private const val TAG = "trace CameraFragment"
     }
+    private var _binding: FragmentCameraBinding? = null
 
-    private var _fragmentCameraBinding: FragmentCameraBinding? = null
+    private val binding get() = _binding!!
 
-    private val fragmentCameraBinding
-        get() = _fragmentCameraBinding!!
-
-    private lateinit var handLandmarkerHelper: HandLandmarkerHelper
+    private lateinit var helper: HandLandmarkerHelper
     private val viewModel: MainViewModel by activityViewModels()
     private var preview: Preview? = null
-    private var imageAnalyzer: ImageAnalysis? = null
+    private var analyzer: ImageAnalysis? = null
     private var camera: Camera? = null
-    private var cameraProvider: ProcessCameraProvider? = null
-    private var cameraFacing = CameraSelector.LENS_FACING_FRONT
+    private var provider: ProcessCameraProvider? = null
+    private var facing = CameraSelector.LENS_FACING_FRONT
 
     /** Blocking ML operations are performed using this executor */
     private lateinit var backgroundExecutor: ExecutorService
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "onResume")
         // Make sure that all permissions are still present, since the
         // user could have removed them while the app was in paused state.
         if (!PermissionsFragment.hasPermissions(requireContext())) {
@@ -78,28 +75,29 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         // Start the HandLandmarkerHelper again when users come back
         // to the foreground.
         backgroundExecutor.execute {
-            if (handLandmarkerHelper.isClose()) {
-                handLandmarkerHelper.setupHandLandmarker()
+            if (helper.isClose()) {
+                helper.setup()
             }
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if(this::handLandmarkerHelper.isInitialized) {
-            viewModel.setHands(handLandmarkerHelper.hands)
-            viewModel.setDetect(handLandmarkerHelper.detect)
-            viewModel.setTrack(handLandmarkerHelper.track)
-            viewModel.setPresence(handLandmarkerHelper.presence)
-            viewModel.setGpu(handLandmarkerHelper.gpu)
+        Log.d(TAG, "onPause")
+        if(this::helper.isInitialized) {
+            viewModel.setHands(helper.hands)
+            viewModel.setDetect(helper.alpha)
+            viewModel.setTrack(helper.alpha)
+            viewModel.setPresence(helper.alpha)
+            viewModel.setGpu(helper.gpu)
 
             // Close the HandLandmarkerHelper and release resources
-            backgroundExecutor.execute { handLandmarkerHelper.clearHandLandmarker() }
+            backgroundExecutor.execute { helper.clear() }
         }
     }
 
     override fun onDestroyView() {
-        _fragmentCameraBinding = null
+        _binding = null
         super.onDestroyView()
 
         // Shut down our background executor
@@ -114,53 +112,49 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _fragmentCameraBinding =
+        _binding =
             FragmentCameraBinding.inflate(inflater, container, false)
-
-        return fragmentCameraBinding.root
+        Log.d(TAG, "onCreateView")
+        return binding.root
     }
 
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Log.d(TAG, "onViewCreated")
         // Initialize our background executor
         backgroundExecutor = Executors.newSingleThreadExecutor()
 
         // Wait for the views to be properly laid out
-        fragmentCameraBinding.viewFinder.post {
+        binding.viewFinder.post {
             // Set up the camera and its use cases
             setUpCamera()
         }
 
         val res = context?.resources
         val gpu = res!!.getInteger(R.integer.landmark_delegate_gpu) == 1
-        fragmentCameraBinding.bottomSheetLayout.inferenceTimeLabel.text =
+        binding.bottomSheetLayout.inferenceTimeLabel.text =
             String.format("%s %dH A=%4.2f ",
                 if (gpu) "GPU" else "CPU", viewModel.hands, viewModel.detect
             )
 
         // Create the HandLandmarkerHelper that will handle the inference
         backgroundExecutor.execute {
-            handLandmarkerHelper = HandLandmarkerHelper(
-                context  = requireContext(),
-                detect   = viewModel.detect,
-                track    = viewModel.track,
-                presence = viewModel.presence,
-                hands    = viewModel.hands,
-                gpu      = viewModel.gpu,
-                handLandmarkerHelperListener = this
+            helper = HandLandmarkerHelper(
+                context = requireContext(),
+                lsnr    = this
             )
         }
     }
     // Initialize CameraX, and prepare to bind the camera use cases
     private fun setUpCamera() {
-        val cameraProviderFuture =
+        val future =
             ProcessCameraProvider.getInstance(requireContext())
-        cameraProviderFuture.addListener(
+        future.addListener(
             {
                 // CameraProvider
-                cameraProvider = cameraProviderFuture.get()
+                provider = future.get()
 
                 // Build and bind the camera use cases
                 bindCameraUseCases()
@@ -171,23 +165,21 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
     // Declare and bind preview, capture and analysis use cases
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
-
-        // CameraProvider
-        val cameraProvider = cameraProvider
+        // CameraProvider and Selector
+        val pv = provider
             ?: throw IllegalStateException("Camera initialization failed.")
-
-        val cameraSelector =
-            CameraSelector.Builder().requireLensFacing(cameraFacing).build()
+        val sel =
+            CameraSelector.Builder().requireLensFacing(facing).build()
 
         // Preview. Only using the 4:3 ratio because this is the closest to our models
-        preview = Preview.Builder() //.setTargetAspectRatio(AspectRatio.RATIO_4_3)
-            .setTargetRotation(fragmentCameraBinding.viewFinder.display.rotation)
+        preview = Preview.Builder()
+            .setTargetRotation(binding.viewFinder.display.rotation)
             .build()
 
         // ImageAnalysis. Using RGBA 8888 to match how our models work
-        imageAnalyzer =
-            ImageAnalysis.Builder() //.setTargetAspectRatio(AspectRatio.RATIO_4_3)
-                .setTargetRotation(fragmentCameraBinding.viewFinder.display.rotation)
+        analyzer =
+            ImageAnalysis.Builder()
+                .setTargetRotation(binding.viewFinder.display.rotation)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
@@ -199,33 +191,33 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
                 }
 
         // Must unbind the use-cases before rebinding them
-        cameraProvider.unbindAll()
+        pv.unbindAll()
 
         try {
             // A variable number of use-cases can be passed here -
             // camera provides access to CameraControl & CameraInfo
-            camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageAnalyzer
+            camera = pv.bindToLifecycle(
+                this, sel, preview, analyzer
             )
 
             // Attach the viewfinder's surface provider to preview use case
-            preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
+            preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
     }
 
     private fun detectHand(imageProxy: ImageProxy) {
-        handLandmarkerHelper.detectLiveStream(
+        helper.detectLiveStream(
             imageProxy = imageProxy,
-            isFrontCamera = cameraFacing == CameraSelector.LENS_FACING_FRONT
+            isFrontCamera = facing == CameraSelector.LENS_FACING_FRONT
         )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        imageAnalyzer?.targetRotation =
-            fragmentCameraBinding.viewFinder.display.rotation
+        analyzer?.targetRotation =
+            binding.viewFinder.display.rotation
     }
 
     // Update UI after hand have been detected. Extracts original
@@ -235,24 +227,24 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         resultBundle: HandLandmarkerHelper.ResultBundle
     ) {
         activity?.runOnUiThread {
-            if (_fragmentCameraBinding == null) return@runOnUiThread
+            if (_binding == null) return@runOnUiThread
 
-            fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
+            binding.bottomSheetLayout.inferenceTimeVal.text =
                 String.format("[%dx%d] %4dms",
-                    resultBundle.inputImageHeight, resultBundle.inputImageWidth,
-                    resultBundle.inferenceTime)
+                    resultBundle.height, resultBundle.width,
+                    resultBundle.time)
 
             // Pass necessary information to OverlayView for drawing on the canvas
-            fragmentCameraBinding.overlay.setResults(
+            binding.overlay.setResults(
                 resultBundle.results.first(),
-                resultBundle.inputImageHeight,
-                resultBundle.inputImageWidth
+                resultBundle.height,
+                resultBundle.width
             )
 
             // Force a redraw
-            fragmentCameraBinding.overlay.invalidate()
+            binding.overlay.invalidate()
 
-            var colors = handLandmarkerHelper.calcCtrlColors(resultBundle.results.first())
+            var colors = helper.calcCtrlColors(resultBundle.results.first())
             (activity as MainActivity).updateBackground(colors[0], colors[1])
         }
     }
