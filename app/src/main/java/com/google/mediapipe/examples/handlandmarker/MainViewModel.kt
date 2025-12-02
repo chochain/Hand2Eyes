@@ -23,42 +23,21 @@ import androidx.lifecycle.ViewModel
  */
 class MainViewModel : ViewModel() {
 
-    private var _delegate: Int = HandLandmarkerHelper.DELEGATE_CPU
-    private var _minHandDetectionConfidence: Float =
-        HandLandmarkerHelper.DEFAULT_HAND_DETECTION_CONFIDENCE
-    private var _minHandTrackingConfidence: Float = HandLandmarkerHelper
-        .DEFAULT_HAND_TRACKING_CONFIDENCE
-    private var _minHandPresenceConfidence: Float = HandLandmarkerHelper
-        .DEFAULT_HAND_PRESENCE_CONFIDENCE
-    private var _maxHands: Int = HandLandmarkerHelper.DEFAULT_NUM_HANDS
+    private var _gpu: Int = 0
+    private var _detect: Float = 0.4f
+    private var _track: Float = 0.4f
+    private var _presence: Float = 0.4f
+    private var _hands: Int = 1
 
-    val currentDelegate: Int get() = _delegate
-    val currentMinHandDetectionConfidence: Float
-        get() =
-            _minHandDetectionConfidence
-    val currentMinHandTrackingConfidence: Float
-        get() =
-            _minHandTrackingConfidence
-    val currentMinHandPresenceConfidence: Float
-        get() =
-            _minHandPresenceConfidence
-    val currentMaxHands: Int get() = _maxHands
+    val gpu:      Int   get() = _gpu
+    val detect:   Float get() = _detect
+    val track:    Float get() = _track
+    val presence: Float get() = _presence
+    val hands:    Int   get() = _hands
 
-    fun setDelegate(delegate: Int) {
-        _delegate = delegate
-    }
-
-    fun setMinHandDetectionConfidence(confidence: Float) {
-        _minHandDetectionConfidence = confidence
-    }
-    fun setMinHandTrackingConfidence(confidence: Float) {
-        _minHandTrackingConfidence = confidence
-    }
-    fun setMinHandPresenceConfidence(confidence: Float) {
-        _minHandPresenceConfidence = confidence
-    }
-
-    fun setMaxHands(maxResults: Int) {
-        _maxHands = maxResults
-    }
+    fun setGpu(t: Int)        { _gpu      = t }
+    fun setDetect(s: Float)   { _detect   = s }
+    fun setTrack(s: Float)    { _track    = s }
+    fun setPresence(s: Float) { _presence = s }
+    fun setHands(h: Int)      { _hands    = h }
 }
