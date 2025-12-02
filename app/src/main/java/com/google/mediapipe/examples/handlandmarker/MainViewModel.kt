@@ -23,11 +23,11 @@ import androidx.lifecycle.ViewModel
  */
 class MainViewModel : ViewModel() {
 
-    private var _gpu: Int = 0
-    private var _detect: Float = 0.4f
-    private var _track: Float = 0.4f
+    private var _gpu     : Int = 0
+    private var _detect  : Float = 0.4f
+    private var _track   : Float = 0.4f
     private var _presence: Float = 0.4f
-    private var _hands: Int = 1
+    private var _hands   : Int = 1
 
     val gpu:      Int   get() = _gpu
     val detect:   Float get() = _detect
