@@ -39,7 +39,6 @@ import com.google.mediapipe.examples.handlandmarker.MainActivity
 import com.google.mediapipe.examples.handlandmarker.MainViewModel
 import com.google.mediapipe.examples.handlandmarker.R
 import com.google.mediapipe.examples.handlandmarker.databinding.FragmentCameraBinding
-import com.google.mediapipe.tasks.vision.core.RunningMode
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -88,12 +87,11 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
     override fun onPause() {
         super.onPause()
         if(this::handLandmarkerHelper.isInitialized) {
-            viewModel.setDelegate(handLandmarkerHelper.currentDelegate)
-            viewModel.setMaxHands(handLandmarkerHelper.maxNumHands)
-            viewModel.setMinHandDetectionConfidence(handLandmarkerHelper.minHandDetectionConfidence)
-            viewModel.setMinHandTrackingConfidence(handLandmarkerHelper.minHandTrackingConfidence)
-            viewModel.setMinHandPresenceConfidence(handLandmarkerHelper.minHandPresenceConfidence)
-            viewModel.setDelegate(handLandmarkerHelper.currentDelegate)
+            viewModel.setHands(handLandmarkerHelper.hands)
+            viewModel.setDetect(handLandmarkerHelper.detect)
+            viewModel.setTrack(handLandmarkerHelper.track)
+            viewModel.setPresence(handLandmarkerHelper.presence)
+            viewModel.setGpu(handLandmarkerHelper.gpu)
 
             // Close the HandLandmarkerHelper and release resources
             backgroundExecutor.execute { handLandmarkerHelper.clearHandLandmarker() }
@@ -136,30 +134,24 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         }
 
         val res = context?.resources
-        val gpu = res!!.getInteger(R.integer.landmark_delegate_gpu) == HandLandmarkerHelper.DELEGATE_GPU
+        val gpu = res!!.getInteger(R.integer.landmark_delegate_gpu) == 1
         fragmentCameraBinding.bottomSheetLayout.inferenceTimeLabel.text =
             String.format("%s %dH A=%4.2f ",
-                if (gpu) "GPU" else "CPU",
-                viewModel.currentMaxHands,
-                viewModel.currentMinHandDetectionConfidence)
-
+                if (gpu) "GPU" else "CPU", viewModel.hands, viewModel.detect
+            )
 
         // Create the HandLandmarkerHelper that will handle the inference
         backgroundExecutor.execute {
             handLandmarkerHelper = HandLandmarkerHelper(
-                context = requireContext(),
-                runningMode = RunningMode.LIVE_STREAM,
-                minHandDetectionConfidence = viewModel.currentMinHandDetectionConfidence,
-                minHandTrackingConfidence = viewModel.currentMinHandTrackingConfidence,
-                minHandPresenceConfidence = viewModel.currentMinHandPresenceConfidence,
-                maxNumHands = viewModel.currentMaxHands,
-                currentDelegate = viewModel.currentDelegate,
+                context  = requireContext(),
+                detect   = viewModel.detect,
+                track    = viewModel.track,
+                presence = viewModel.presence,
+                hands    = viewModel.hands,
+                gpu      = viewModel.gpu,
                 handLandmarkerHelperListener = this
             )
         }
-
-        // Attach listeners to UI control widgets
-        // initBottomSheetControls()
     }
     // Initialize CameraX, and prepare to bind the camera use cases
     private fun setUpCamera() {
@@ -188,13 +180,13 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
             CameraSelector.Builder().requireLensFacing(cameraFacing).build()
 
         // Preview. Only using the 4:3 ratio because this is the closest to our models
-        preview = Preview.Builder().setTargetAspectRatio(AspectRatio.RATIO_4_3)
+        preview = Preview.Builder() //.setTargetAspectRatio(AspectRatio.RATIO_4_3)
             .setTargetRotation(fragmentCameraBinding.viewFinder.display.rotation)
             .build()
 
         // ImageAnalysis. Using RGBA 8888 to match how our models work
         imageAnalyzer =
-            ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_4_3)
+            ImageAnalysis.Builder() //.setTargetAspectRatio(AspectRatio.RATIO_4_3)
                 .setTargetRotation(fragmentCameraBinding.viewFinder.display.rotation)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
@@ -254,8 +246,7 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
             fragmentCameraBinding.overlay.setResults(
                 resultBundle.results.first(),
                 resultBundle.inputImageHeight,
-                resultBundle.inputImageWidth,
-                RunningMode.LIVE_STREAM
+                resultBundle.inputImageWidth
             )
 
             // Force a redraw
@@ -269,13 +260,6 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
     override fun onError(error: String, errorCode: Int) {
         activity?.runOnUiThread {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-            /*
-            if (errorCode == HandLandmarkerHelper.GPU_ERROR) {
-                fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
-                    HandLandmarkerHelper.DELEGATE_CPU, false
-                )
-            }
-            */
         }
     }
 }
