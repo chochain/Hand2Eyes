@@ -84,12 +84,11 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause")
-        if(this::helper.isInitialized) {
-            viewModel.setHands(helper.hands)
-            viewModel.setDetect(helper.alpha)
-            viewModel.setTrack(helper.alpha)
-            viewModel.setPresence(helper.alpha)
+        if (this::helper.isInitialized) {         /// keep vars into viewModel (for persistence)
             viewModel.setGpu(helper.gpu)
+            viewModel.setHands(helper.hands)
+            viewModel.setAlpha(helper.alpha)
+            viewModel.setScale(helper.scale)
 
             // Close the HandLandmarkerHelper and release resources
             backgroundExecutor.execute { helper.clear() }
@@ -132,13 +131,6 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
             setUpCamera()
         }
 
-        val res = context?.resources
-        val gpu = res!!.getInteger(R.integer.landmark_delegate_gpu) == 1
-        binding.bottomSheetLayout.inferenceTimeLabel.text =
-            String.format("%s %dH A=%4.2f ",
-                if (gpu) "GPU" else "CPU", viewModel.hands, viewModel.detect
-            )
-
         // Create the HandLandmarkerHelper that will handle the inference
         backgroundExecutor.execute {
             helper = HandLandmarkerHelper(
@@ -147,6 +139,7 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
             )
         }
     }
+
     // Initialize CameraX, and prepare to bind the camera use cases
     private fun setUpCamera() {
         val future =
@@ -214,15 +207,23 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         )
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        analyzer?.targetRotation =
-            binding.viewFinder.display.rotation
+    override fun onConfigurationChanged(config: Configuration) {
+        super.onConfigurationChanged(config)
+        Log.d(TAG, "onConfigChanged")
+        analyzer?.targetRotation = binding.viewFinder.display.rotation
+
     }
 
     // Update UI after hand have been detected. Extracts original
     // image height/width to scale and place the landmarks properly through
     // OverlayView
+    override fun onHelperCreated(opt : String) {
+        Log.d(TAG, "onHelperBuilt")
+        activity?.runOnUiThread {
+            binding.bottomSheetLayout.inferenceTimeLabel.text = opt
+        }
+    }
+
     override fun onResults(
         resultBundle: HandLandmarkerHelper.ResultBundle
     ) {
@@ -244,6 +245,7 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
             // Force a redraw
             binding.overlay.invalidate()
 
+            // Update controllers colors
             var colors = helper.calcCtrlColors(resultBundle.results.first())
             (activity as MainActivity).updateBackground(colors[0], colors[1])
         }
