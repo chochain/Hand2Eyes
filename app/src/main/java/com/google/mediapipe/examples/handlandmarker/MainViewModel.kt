@@ -23,21 +23,18 @@ import androidx.lifecycle.ViewModel
  */
 class MainViewModel : ViewModel() {
 
-    private var _gpu     : Int = 0
-    private var _detect  : Float = 0.4f
-    private var _track   : Float = 0.4f
-    private var _presence: Float = 0.4f
-    private var _hands   : Int = 1
+    private var _gpu   : Int   = 0
+    private var _hands : Int   = 1
+    private var _alpha : Float = 0.4f
+    private var _scale : Float = 0.25f
 
     val gpu:      Int   get() = _gpu
-    val detect:   Float get() = _detect
-    val track:    Float get() = _track
-    val presence: Float get() = _presence
+    val alpha:    Float get() = _alpha
     val hands:    Int   get() = _hands
+    val scale:    Float get() = _scale
 
-    fun setGpu(t: Int)        { _gpu      = t }
-    fun setDetect(s: Float)   { _detect   = s }
-    fun setTrack(s: Float)    { _track    = s }
-    fun setPresence(s: Float) { _presence = s }
-    fun setHands(h: Int)      { _hands    = h }
+    fun setGpu(t: Int)     { _gpu   = t }
+    fun setHands(h: Int)   { _hands = h }
+    fun setAlpha(a: Float) { _alpha = a }
+    fun setScale(s: Float) { _scale = s }
 }
