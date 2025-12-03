@@ -33,6 +33,6 @@
     <integer name="landmark_delegate_gpu">0</integer>
     <integer name="landmark_num_hands">1</integer>
     <integer name="landmark_stroke_width">3</integer>
-    <integer name="landmark_post_scale">25</integer>
-    <integer name="landmark_detect_confidence">40</integer>
+    <dimen   name="landmark_post_scale">0.25</dimen>
+    <dimen   name="landmark_detect_confidence">0.40</dimen>
 </resources>
