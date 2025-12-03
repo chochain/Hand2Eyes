@@ -16,6 +16,7 @@
 package com.google.mediapipe.examples.handlandmarker
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.graphics.Color
@@ -30,15 +31,21 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
+import kotlin.String
 
 class HandLandmarkerHelper(
     val context : Context,
     val lsnr    : LandmarkerListener? = null
 ) {
     val res = context.resources
-    var alpha : Float = 0.01f * res.getInteger(R.integer.landmark_detect_confidence)
-    var hands : Int   = res.getInteger(R.integer.landmark_num_hands)
-    var gpu   : Int   = res.getInteger(R.integer.landmark_delegate_gpu)
+    val alpha = res.getFloat(R.dimen.landmark_detect_confidence)
+    val scale = res.getFloat(R.dimen.landmark_post_scale)
+    val hands = res.getInteger(R.integer.landmark_num_hands)
+    val gpu   = res.getInteger(R.integer.landmark_delegate_gpu)
+    val opt   = String.format(
+                    "%s %dH A=%4.2f ",
+                    if (gpu == 1) "GPU" else "CPU", hands, alpha
+                )
 
     // For this example this needs to be a var so it can be reset on changes.
     // If the Hand Landmarker will not change, a lazy val would be preferable.
@@ -90,7 +97,8 @@ class HandLandmarkerHelper(
     // the GPU delegate needs to be used on the thread that initialized the
     // Landmarker
     fun setup() {
-        Log.d(TAG, "setupHandLandmarker")
+        Log.d(TAG,
+            "setupHandLandmarker")
 
         // Set general hand landmarker options
         val baseOptionBuilder = BaseOptions.builder()
@@ -127,6 +135,8 @@ class HandLandmarkerHelper(
             val options = optionsBuilder.build()
             marker =
                 HandLandmarker.createFromOptions(context, options)
+
+            lsnr.onHelperCreated(opt)
         } catch (e: IllegalStateException) {
             lsnr?.onError(
                 "Hand Landmarker failed to initialize. See error logs for details"
@@ -168,11 +178,12 @@ class HandLandmarkerHelper(
         val matrix = Matrix().apply {
             // Rotate the frame received from the camera to be in the same direction as it'll be shown
             postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
+
             // flip image if user use front camera
             if (isFrontCamera) {
                 postScale(
-                    -alpha,
-                    alpha,
+                    -scale,
+                    scale,
                     imageProxy.width.toFloat(),
                     imageProxy.height.toFloat()
                 )
@@ -237,6 +248,7 @@ class HandLandmarkerHelper(
     )
 
     interface LandmarkerListener {
+        fun onHelperCreated(opt: String)
         fun onError(error: String, errorCode: Int = OTHER_ERROR)
         fun onResults(resultBundle: ResultBundle)
     }
