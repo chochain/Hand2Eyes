@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "MP HandLandmarker"
+rootProject.name = "Hand2Eyes"
 include ':app'
