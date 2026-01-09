@@ -4,7 +4,7 @@
 
 This is an Android camera app utilize MediaPipe hand landmarks from continuous camera frames. It then drives the brightness of screen areas which is opto-coupled by Arduino controlled robot.
 
-![Hand2Eyes](https://youtu.be/dxwCotsNItU)
+![Hand2Eyes](https://www.youtube.com/watch?v=dxwCotsNItU)
 
 
 ## Build using Android Studio
