@@ -34,7 +34,7 @@
     <string name="tv_gallery_placeholder">Click + to add an image or a video
         to begin running the hand landmarker.</string>
 
-    <string name="label_inference_options">Inference Options</string>
+    <string name="label_inference_time">Inference Time</string>
     <string name="label_fps">Frames per Second</string>
     <string name="label_hand_detection_confidence_threshold">Detection Score</string>
     <string name="label_hand_tracking_confidence_threshold">Tracking   Score</string>
