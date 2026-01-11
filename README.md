@@ -1,8 +1,8 @@
-# Android - Robot driven by Hand Landmark
+# Android - Robot driven by Hand Landmarks
 
 ## Overview
 
-This is an Android camera app utilize MediaPipe hand landmarks from continuous camera frames. 
+An example of how to control the robot movements by Android camera app utilizing MediaPipe hand landmarks from continuous camera frames.
 
 [![Your Video Title](https://img.youtube.com/vi/dxwCotsNItU/0.jpg)](https://www.youtube.com/watch?v=dxwCotsNItU)
 
@@ -25,8 +25,10 @@ may vary by device.
 
 ### Testing
 
-Hand2Eyes has been successfully built and tested on
+Hand2Eyes has been successfully built and tested on these old Android phones.
 
-* ASUS ZenFone 3 (Android 8, 32-bit)
-* SOYES mini-phone (Android 9, 64-bit)
+> Phone|Android|Spec|FPS
+> -----|-------|----|---
+> ASUS ZenFone 3|Android 8|32-bit 2.0GHz octa-A53+Adreno|~75ms/frame on GPU
+> SOYES X11 mini-phone|Android 9|64-bit, 1.3GHz quad-A7|~800ms/frame on CPU
 
