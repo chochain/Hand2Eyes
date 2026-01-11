@@ -27,8 +27,8 @@ may vary by device.
 
 Hand2Eyes has been successfully built and tested on these old Android phones.
 
-> Phone|Android|Spec|FPS
-> -----|-------|----|---
-> ASUS ZenFone 3|Android 8|32-bit 2.0GHz octa-A53+Adreno|~75ms/frame on GPU
-> SOYES X11 mini-phone|Android 9|64-bit, 1.3GHz quad-A7|~800ms/frame on CPU
+> Phone|Android|Spec|FPS|Note
+> -----|-------|----|---|----
+> ASUS ZenFone 3|Android 8, 64-bit|Snapdragon 625 (2.0GHz octa-A53+Adreno506)|~75ms/frame|
+> SOYES X11 mini-phone|Android 9, 32-bit|MT6850M (1.3GHz quad-A7+Mali400)|~800ms/frame|Mali too slow
 
