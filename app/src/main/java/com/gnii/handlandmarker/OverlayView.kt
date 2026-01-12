@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.mediapipe.examples.handlandmarker
+package com.gnii.handlandmarker
 
 import android.content.Context
 import android.graphics.Canvas
@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
 import kotlin.math.max
+import com.gnii.handlandmarker.R
 
 class OverlayView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {

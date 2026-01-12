@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.mediapipe.examples.handlandmarker
+package com.gnii.handlandmarker
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.google.mediapipe.examples.handlandmarker.databinding.ActivityMainBinding
+import com.gnii.handlandmarker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var main: ActivityMainBinding

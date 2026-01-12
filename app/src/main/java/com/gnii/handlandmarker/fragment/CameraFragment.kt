@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.mediapipe.examples.handlandmarker.fragment
+package com.gnii.handlandmarker.fragment
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
@@ -33,11 +33,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
-import com.google.mediapipe.examples.handlandmarker.HandLandmarkerHelper
-import com.google.mediapipe.examples.handlandmarker.MainActivity
-import com.google.mediapipe.examples.handlandmarker.MainViewModel
-import com.google.mediapipe.examples.handlandmarker.R
-import com.google.mediapipe.examples.handlandmarker.databinding.FragmentCameraBinding
+import com.gnii.handlandmarker.HandLandmarkerHelper
+import com.gnii.handlandmarker.MainActivity
+import com.gnii.handlandmarker.MainViewModel
+import com.gnii.handlandmarker.R
+import com.gnii.handlandmarker.databinding.FragmentCameraBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.mediapipe.examples.handlandmarker
+package com.gnii.handlandmarker
 
 import androidx.lifecycle.ViewModel
 
