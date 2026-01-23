@@ -20,6 +20,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.activity.OnBackPressedCallback
 import com.gnii.handlandmarker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -35,10 +36,23 @@ class MainActivity : AppCompatActivity() {
             R.id.fragment_container
         ) as NavHostFragment
         main.navigation.setupWithNavController(nav.navController)
-    }
 
-    override fun onBackPressed() {
-        finish()
+        val callback = object : OnBackPressedCallback(true /* enabled by default */) {
+            override fun handleOnBackPressed() {
+                // Your code that used to be in onBackPressed() goes here
+                // Example:
+                // if (someCondition) {
+                //     // Do something specific
+                // } else {
+                //     // If you still want the default back behavior (e.g., closing the app),
+                //     // you can call this, but often you'll handle it all here.
+                //     // super.handleOnBackPressed() // Or simply finish() or navigate back
+                // }
+                // For simple activity closing:
+                finish() 
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 
     fun updateBackground(lcolor: Int, rcolor: Int) {
